@@ -1,12 +1,21 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.AccountRequest;
+import com.example.demo.service.AccountValidationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api/v1")
 public class AccountValidationController {
+
+    private final AccountValidationService accountValidationService;
+
+    public AccountValidationController(AccountValidationService accountValidationService) {
+        this.accountValidationService = accountValidationService;
+    }
+
+
 
 
     // GET /api/v1/validate?accountNumber=4212123456789&branchCode=3456789
@@ -16,16 +25,20 @@ public class AccountValidationController {
             @RequestParam String accountNumber,
             @RequestParam String branchCode) {
 
-        if (accountNumber != null
-                && accountNumber.startsWith("4212")
-                && accountNumber.length() == 13
-                && branchCode != null
-                && branchCode.startsWith("345")
-                && branchCode.length() == 7) {
+//        if (accountNumber != null
+//                && accountNumber.startsWith("4212")
+//                && accountNumber.length() == 13
+//                && branchCode != null
+//                && branchCode.startsWith("345")
+//                && branchCode.length() == 7) {
+//
+//            return ResponseEntity.ok("Valid");
+//        }
+//        return ResponseEntity.badRequest().body("In-Valid");
 
-            return ResponseEntity.ok("Valid");
-        }
-        return ResponseEntity.badRequest().body("In-Valid");
+        return accountValidationService.validate(accountNumber, branchCode)
+                ? ResponseEntity.ok("Valid")
+                : ResponseEntity.badRequest().body("In-Valid");
     }
 
 
@@ -38,17 +51,23 @@ public class AccountValidationController {
     public ResponseEntity<String> validateAccountNumber(
             @RequestBody AccountRequest accountRequest) {
 
-        String accountNumber = accountRequest.getAccountNumber();
-        String branchCode = accountRequest.getBranchCode();
-        if(null != accountNumber
-                && accountNumber.startsWith("4212")
-                && accountNumber.length()== 13
-                && null != branchCode
-                && branchCode.startsWith("345")
-                && branchCode.length() == 7) {
+//        String accountNumber = accountRequest.getAccountNumber();
+//        String branchCode = accountRequest.getBranchCode();
+//        if(null != accountNumber
+//                && accountNumber.startsWith("4212")
+//                && accountNumber.length()== 13
+//                && null != branchCode
+//                && branchCode.startsWith("345")
+//                && branchCode.length() == 7) {
+//
+//            return ResponseEntity.ok("Valid");
+//        }
+//        return   ResponseEntity.badRequest().body("In-Valid");
 
-            return ResponseEntity.ok("Valid");
-        }
-        return   ResponseEntity.badRequest().body("In-Valid");
+        return accountValidationService.validate(
+                accountRequest.getAccountNumber(),
+                accountRequest.getBranchCode())
+                ? ResponseEntity.ok("Valid")
+                : ResponseEntity.badRequest().body("In-Valid");
     }
 }
